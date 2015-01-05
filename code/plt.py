@@ -10,10 +10,8 @@ import matplotlib.pyplot as plt
 f=open('tmp.dat','r')
 
 title=f.readline().strip()
-print(title)
-
-len=eval(f.readline().strip())
-print(len)
+feature=f.readline().strip()
+length=eval(f.readline().strip())
 
 date=f.readline().strip()
 date=re.sub(r'\[','',date)
@@ -21,20 +19,20 @@ date=re.sub(r'\]','',date)
 date=re.sub(r' +','',date)
 date=re.sub(r'\'','',date)
 date=date.split(',')
-print (date)
 
 content=f.readline().strip()
 content=re.sub(r'\[','',content)
 content=re.sub(r'\]','',content)
 content=re.sub(r' +','',content)
-content=map(int,content.split(','))
+content=map(float,content.split(','))
 content=[i/1000000 for i in content]
 f.close()
 
-xticks=range(0,len)
+xticks=range(0,length)
 xtick_labels=date
 
 ax = plt.subplot(111)
+fig=plt.figure()
 
 ax.set_label('Date')
 ax.set_xticks(xticks)
@@ -45,5 +43,8 @@ plt.ylabel('0.01 \'Yi Yuan\'')
 plt.title(title)
 #print(content)
 ax.plot(content)
-plt.show()
+png_name=('%s-%s' % (feature,title))
+png_name=re.sub('Stock ','',png_name)
+fig.savefig(png_name)
+#plt.show()
 
