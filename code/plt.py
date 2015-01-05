@@ -1,12 +1,17 @@
 #/usr/bin/python
 #coding=utf-8
 import re
+# Works without $DISPLAY
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 #
-#data format
-#len\n
-#[date array]\n
-#[price array]\n
+#****data format****
+# title
+# feature
+# len\n
+# [date array]\n
+# [price array]\n
 f=open('tmp.dat','r')
 
 title=f.readline().strip()
@@ -31,8 +36,8 @@ f.close()
 xticks=range(0,length)
 xtick_labels=date
 
-ax = plt.subplot(111)
 fig=plt.figure()
+ax=fig.add_subplot(111)
 
 ax.set_label('Date')
 ax.set_xticks(xticks)
@@ -43,8 +48,8 @@ plt.ylabel('0.01 \'Yi Yuan\'')
 plt.title(title)
 #print(content)
 ax.plot(content)
-png_name=('%s-%s' % (feature,title))
-png_name=re.sub('Stock ','',png_name)
-fig.savefig(png_name)
+pic_name=('%s-%s.jpg' % (feature,title))
+pic_name=re.sub('Stock ','',pic_name)
+fig.savefig(pic_name)
 #plt.show()
 

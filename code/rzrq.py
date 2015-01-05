@@ -130,7 +130,6 @@ def rzrq(stock_code):
         os.system('python plt.py')
     #Draw a map
 
-rzrq('600004')
 f=open('../docs/shanghai_name_symbol.txt','r')
 for s in f:
     s.strip('\n')
