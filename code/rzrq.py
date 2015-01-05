@@ -6,7 +6,7 @@ import re
 import os
 #import matplotlib.pyplot as plt
 
-PLOT=1
+PLOT=0
 SAVE_TO_FILE = 0
 DEBUG_USING_STATIC_DATA = 0
 
@@ -47,6 +47,39 @@ def get_rzrq_from_file(code):
     else:
         print("NONE!!")
     return str
+# MIN,MAX,START,END
+
+# increase
+# (END-START)/END > 50%
+
+# decrease
+# (START-END)/END > 50%
+
+# RAPID
+# (MAX-MIN)/MIN > 2倍
+
+RZRQ_FEATURE_NONE=0
+RZRQ_FEATURE_INCREASE=1
+RZRQ_FEATURE_DECREASE=2
+RZRQ_FEATURE_RAPID=4
+
+#sum[0] is the oldest date
+def get_rzrq_feature(sum):
+    ret=RZRQ_FEATURE_NONE;
+    MAX=max(sum)
+    MIN=min(sum)
+    START=sum[0]
+    END=sum[len(sum)-1]
+    print('MAX=%d,MIN=%d,START=%d,END=%d' % (MAX,MIN,START,END))
+    if((END>START) and (END-START)>0.5*END):
+        ret += RZRQ_FEATURE_INCREASE
+    if((START>END) and (START-END)>0.5*END):
+        ret += RZRQ_FEATURE_DECREASE
+    if((MAX-MIN)/MIN>2):
+        print((MAX-MIN)/MIN)
+        ret += RZRQ_FEATURE_RAPID
+    return ret
+
 
 stock_code='600183'
 # Using debug message
@@ -66,6 +99,8 @@ for everyday in rzrq_arrays:
     rzrq_date.append(item[4])
     rzrq_result.append(eval(item[3]))
     #print('%s - %s' %  (item[4],item[3]))
+
+get_rzrq_feature(rzrq_result)
 
 if PLOT:
     x=len(rzrq_result)
