@@ -5,22 +5,27 @@ import os
 from operator import itemgetter
 #from numpy import *
 import re
+
+
+stock_num=0
+
 #
 # output array
 # [name][symbol][time][vol][change][price]
-def get_vol(code,num,name,symbol,vol,change,price):
+def get_vol(stock_markets,num,name,symbol,vol,change,price):
+
     #symbol NAME Change Price
-    url = 'http://hq.sinajs.cn/?list=%s' % code
-#    print(url)
-    req = urllib.request.Request(url)
-    #HERE Saved a copy of shanghai stock names
-    content = urllib.request.urlopen(req).read()
-    #str = content.decode('gb2312')
-    str = content.decode('gbk')
+    str=''
+    for n in stock_markets:
+        url = 'http://hq.sinajs.cn/?list=%s' % n
+        req = urllib.request.Request(url)
+        content = urllib.request.urlopen(req).read()
+        str += content.decode('gbk')
+
 # Store to file
-#    file=open('sina_stock_return_msg.txt','w+')
-#    file.write(str)
-#    file.close()
+    file=open('sina_stock_return_msg.txt','w+')
+    file.write(str)
+    file.close()
     info=str.split('"')
     sn=info[0:len(info):2]
     info=info[1:len(info):2]
@@ -30,22 +35,29 @@ def get_vol(code,num,name,symbol,vol,change,price):
     for i in range(0,mini):
         ssymbol=symbol_regex.findall(sn[i])
         ssymbol=ssymbol[0]
-        data = info[i].split(',')
-        #print(data)
-        sname = "%-6s" % data[0]
-        price_current = "%-6s" % float(data[3])
-        change_percent = ( float(data[3]) - float(data[2]) )*100 / float(data[2])
-        change_percent = "%-6s" % round (change_percent, 2)
-        stime=data[31]
-        t=stime.split(':')
-        n_time=(int(t[0]))*3600+(int(t[1]))*60+int(t[2])
-        n_vol=eval(data[8])
-        name[i]=sname
-        symbol[i]=ssymbol
-        time=n_time
-        vol[i]=n_vol
-        price[i]=float(price_current)
-        change[i]=float(change_percent)
+        #print('i=%d,sn[i]= %s info[i]=%s'%(i,sn[i],info[i]))
+        if info[i]=='':
+            vol[i]=0
+            price[i]=float(0)
+            change[i]=float(0)
+        else:
+            data = info[i].split(',')
+            #print(data)
+            sname = "%-8s" % data[0]
+            price_current = "%-6s" % float(data[3])
+            change_percent = ( float(data[3]) - float(data[2]) )*100 / float(data[2])
+            change_percent = "%-6s" % round (change_percent, 2)
+            stime=data[31]
+            t=stime.split(':')
+            n_time=(int(t[0]))*3600+(int(t[1]))*60+int(t[2])
+#            n_vol=eval(data[8])
+            n_vol=eval(data[9])
+            name[i]=sname
+            symbol[i]=ssymbol
+            time=n_time
+            vol[i]=n_vol
+            price[i]=float(price_current)
+            change[i]=float(change_percent)
     return time
 
 
@@ -93,11 +105,6 @@ def process(vols,time,data_vols,data_times):
     ci=ci+1
     
 
-f=open('sina_code_sh.txt','r')
-stock_num=eval(f.readline().strip())
-stock_names=f.read();
-f.close()
-
    
 # Create Symbol - Name -Price
 #
@@ -107,6 +114,16 @@ f.close()
 #    ff.write("%s \n" % (' '.join(map(str,pp))))
 #ff.close()
 #get_vol('sh600138')
+
+stock_names=[0 for i in range(0,3)]
+f=open('sina_code.txt','r')
+stock_num=eval(f.readline().strip())
+stock_names[0]=f.readline();
+stock_names[1]=f.readline()
+stock_names[2]=f.readline()
+f.close()
+
+
 vol_data=[]
 vol_data.append([0 for i in range(0,stock_num)])
 vol_data.append([0 for i in range(0,stock_num)])
@@ -143,4 +160,4 @@ for t in range(0,1000):
     os.system('clear')
     for p in sorted_volume[0:40:1]:
         print(p)
-    os.system('sleep 2')
+    #os.system('sleep 1')
