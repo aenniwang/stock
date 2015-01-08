@@ -3,7 +3,7 @@
 import urllib.request
 import os
 from operator import itemgetter
-from numpy import *
+#from numpy import *
 import re
 #
 # output array
@@ -80,12 +80,16 @@ def process(vols,time,data_vols,data_times):
         data_times[2]=time-list_time[min(ci,29)]
         data_times[1]=time-list_time[min(ci,9)]
         data_times[0]=time-list_time[min(ci,4)]
-        data_vols[5][j]=(100*(list_vol[0][j]-list_vol[min(ci,599)][j])*data_times[5])/list_vol[0][j]
-        data_vols[4][j]=(100*(list_vol[0][j]-list_vol[min(ci,299)][j])*data_times[4])/list_vol[0][j]
-        data_vols[3][j]=(100*(list_vol[0][j]-list_vol[min(ci,59)][j])*data_times[3])/list_vol[0][j]
-        data_vols[2][j]=(100*(list_vol[0][j]-list_vol[min(ci,29)][j])*data_times[2])/list_vol[0][j]
-        data_vols[1][j]=(100*(list_vol[0][j]-list_vol[min(ci,9)][j])*data_times[1])/list_vol[0][j]
-        data_vols[0][j]=(100*(list_vol[0][j]-list_vol[min(ci,4)][j])*data_times[0])/list_vol[0][j]
+        if list_vol[0][j]==0:
+            data_vols[5][j]=data_vols[4][j]=data_vols[2][j]=data_vols[3][j]=data_vols[1][j]=data_vols[0][j]=1;
+        else:
+            data_vols[5][j]=(100*(list_vol[0][j]-list_vol[min(ci,599)][j])*data_times[5])/list_vol[0][j]
+            data_vols[4][j]=(100*(list_vol[0][j]-list_vol[min(ci,299)][j])*data_times[4])/list_vol[0][j]
+            data_vols[3][j]=(100*(list_vol[0][j]-list_vol[min(ci,59)][j])*data_times[3])/list_vol[0][j]
+            data_vols[2][j]=(100*(list_vol[0][j]-list_vol[min(ci,29)][j])*data_times[2])/list_vol[0][j]
+            data_vols[1][j]=(100*(list_vol[0][j]-list_vol[min(ci,9)][j])*data_times[1])/list_vol[0][j]
+            data_vols[0][j]=(100*(list_vol[0][j]-list_vol[min(ci,4)][j])*data_times[0])/list_vol[0][j]
+        data_vols[6][j]=vols[j];
     ci=ci+1
     
 
@@ -110,6 +114,7 @@ vol_data.append([0 for i in range(0,stock_num)])
 vol_data.append([0 for i in range(0,stock_num)])
 vol_data.append([0 for i in range(0,stock_num)])
 vol_data.append([0 for i in range(0,stock_num)])
+vol_data.append([0 for i in range(0,stock_num)])
 vol_time=[0 for i in range(0,6)]
 
 time_start=0
@@ -121,12 +126,21 @@ vol=[0 for i in range(0,stock_num)]
 change=[float(0) for i in range(0,stock_num)]
 price=[float(0) for i in range(0,stock_num)]
 
+stock_static=[]
 for t in range(0,1000):
-   # os.system('clear')
     time_current=get_vol(stock_names,stock_num,name,symbol,vol,change,price)
     process(vol,time_current,vol_data,vol_time)
-    # 1minite
-    sorted_order=sorted(vol_data,key=itemgetter(4))
-    for p in sorted_order[0:20:1]:
+    for i in range(0,stock_num):
+        vol_dat=[symbol[i],name[i],vol_data[5][i],vol_data[4][i],vol_data[3][i],
+                vol_data[2][i],vol_data[1][i],vol_data[0][i],vol_data[6][i] ]
+        if len(stock_static)!=stock_num:
+            stock_static.append(vol_dat)
+        else:
+            stock_static[i]=vol_dat
+    #Sort by absolute volume
+    sorted_volume=sorted(stock_static,key=itemgetter(8),reverse=True)
+
+    os.system('clear')
+    for p in sorted_volume[0:40:1]:
         print(p)
-    #os.system('sleep 2')
+    os.system('sleep 2')
