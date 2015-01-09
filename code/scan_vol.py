@@ -32,11 +32,14 @@ def get_vol(stock_markets,num,name,symbol,vol,change,price):
 #    print(info)
     symbol_regex=re.compile(r's[hz]\d{6}')
     mini=min(len(info),num)
+    print("mini=%d"%mini)
+   # os.system('sleep 100')
     for i in range(0,mini):
         ssymbol=symbol_regex.findall(sn[i])
         ssymbol=ssymbol[0]
         #print('i=%d,sn[i]= %s info[i]=%s'%(i,sn[i],info[i]))
         if info[i]=='':
+            print("%d is empty"%i)
             vol[i]=0
             price[i]=float(0)
             change[i]=float(0)
@@ -50,8 +53,8 @@ def get_vol(stock_markets,num,name,symbol,vol,change,price):
             stime=data[31]
             t=stime.split(':')
             n_time=(int(t[0]))*3600+(int(t[1]))*60+int(t[2])
-#            n_vol=eval(data[8])
-            n_vol=eval(data[9])
+            n_vol=int(data[8])
+ #           n_vol=int(data[9])
             name[i]=sname
             symbol[i]=ssymbol
             time=n_time
@@ -79,6 +82,7 @@ def process(vols,time,data_vols,data_times):
         list_time.pop(COUNT_TIME_SEC-1)
     list_vol.insert(0,vols)
     list_time.insert(0,time)
+    print('sizeof list_vol is %d'%len(list_vol))
     #list_vol[0] is the data_vols for every second
     #list_vol[EVERY_SECOND][EVERY_STOCK]
     if time_start==0:
@@ -115,12 +119,14 @@ def process(vols,time,data_vols,data_times):
 #ff.close()
 #get_vol('sh600138')
 
-stock_names=[0 for i in range(0,3)]
+stock_names=[]
 f=open('sina_code.txt','r')
-stock_num=eval(f.readline().strip())
-stock_names[0]=f.readline();
-stock_names[1]=f.readline()
-stock_names[2]=f.readline()
+stock_num=int(f.readline().strip())
+stock_names.append(f.readline().strip())
+#stock_names.append(f.readline().strip())
+#stock_num+=int(f.readline().strip())
+#stock_names.append(f.readline().strip())
+#stock_num+=int(f.readline().strip())
 f.close()
 
 
@@ -156,8 +162,10 @@ for t in range(0,1000):
             stock_static[i]=vol_dat
     #Sort by absolute volume
     sorted_volume=sorted(stock_static,key=itemgetter(8),reverse=True)
+   #sort by 30 second
+   # sorted_volume=sorted(stock_static,key=itemgetter(4),reverse=True)
 
-    os.system('clear')
-    for p in sorted_volume[0:40:1]:
+   # os.system('clear')
+    for p in sorted_volume[0:4:1]:
         print(p)
-    #os.system('sleep 1')
+    os.system('sleep 100')
