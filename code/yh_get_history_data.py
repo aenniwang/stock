@@ -38,8 +38,7 @@ def get_history_data(code,year_start,year_end):
     f.write(msg)
     f.close()
 
-test_code='000001.sz'
-start_date='2011-12-25'
+start_date='2013-12-25'
 end_date='2015-01-06'
 
 f=open('yh_code.txt','r')
@@ -48,6 +47,9 @@ for msg in f:
     code_list=re.findall('\d{6}.s[s|z]',msg)
     for code in code_list:
         print("Fetch history data for %s "%code)
-        get_history_data(code,start_date,end_date)
+        try:
+            get_history_data(code,start_date,end_date)
+        except:
+            print("Error in get history data for %s"%code)
 
 f.close()
