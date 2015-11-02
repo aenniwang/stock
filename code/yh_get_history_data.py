@@ -23,6 +23,7 @@ from operator import itemgetter
 
 # year_start/end format "2014-01-01"
 def get_history_data(code,year_start,year_end):
+    global foldname
     ys=year_start.split('-')
     ys[1]=str(int(ys[1])-1)
     ye=year_end.split('-')
@@ -33,13 +34,17 @@ def get_history_data(code,year_start,year_end):
     content = urllib.request.urlopen(req).read()
     msg = content.decode('gbk')
 
-    file_name='data/%s%s--%s.csv'%(code,year_start,year_end)
+    file_name='%s/%s.csv'%(foldname,code)
     f=open(file_name,'w')
     f.write(msg)
     f.close()
 
+start_date_latest='2014-12-10'
 start_date='2013-12-25'
-end_date='2015-01-06'
+end_date='2015-01-08'
+foldname='%s--%s'%(start_date,end_date)
+
+os.system('mkdir %s'%foldname)
 
 f=open('yh_code.txt','r')
 for msg in f:
@@ -51,5 +56,8 @@ for msg in f:
             get_history_data(code,start_date,end_date)
         except:
             print("Error in get history data for %s"%code)
-
+            try:
+                get_history_data(code,start_date_latest,end_date)
+            except:
+                print("Still failed in get latest data")
 f.close()
